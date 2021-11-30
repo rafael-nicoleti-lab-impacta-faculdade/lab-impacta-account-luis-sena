@@ -14,12 +14,10 @@ public class DebitController {
     private final AccountApplication application;
 
     @PostMapping("/{accountId}/debit")
-    public ResponseEntity<DebitAccountResponse> debit(
-            @PathVariable long accountId,
-            @RequestBody DebitAccountRequest debitAccountRequest){
+    public ResponseEntity<DebitAccountResponse> debit(@PathVariable long accountId,
+                                                      @RequestBody DebitAccountRequest debitAccountRequest){
 
-        DebitAccountResponse debit = application.debit(accountId, debitAccountRequest);
-
+        var debit = application.debit(accountId, debitAccountRequest);
         return ResponseEntity.ok(debit);
     }
 }

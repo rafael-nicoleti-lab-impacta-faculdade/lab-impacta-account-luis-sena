@@ -13,9 +13,20 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
+    @ExceptionHandler(RuntimeException.class)
+    ResponseEntity<ErrorMessageResponse> accountNotFoundException(RuntimeException exception){
+        var messageResponse = ErrorMessageResponse.builder()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestanp(LocalDateTime.now())
+                .message(exception.getMessage())
+                .description("Não possível processar sua requisição.")
+                .build();
+        return new ResponseEntity<>(messageResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(AccountDontExistsException.class)
     ResponseEntity<ErrorMessageResponse> accountNotFoundException(AccountDontExistsException exception){
-        ErrorMessageResponse messageResponse = ErrorMessageResponse.builder()
+        var messageResponse = ErrorMessageResponse.builder()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .timestanp(LocalDateTime.now())
                 .message(exception.getMessage())
@@ -26,12 +37,12 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(AccountWithoutBalanaceException.class)
     ResponseEntity<ErrorMessageResponse> accountNotFoundException(AccountWithoutBalanaceException exception){
-        ErrorMessageResponse messageResponse = ErrorMessageResponse.builder()
-                .statusCode(HttpStatus.NOT_FOUND.value())
+        var messageResponse = ErrorMessageResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .timestanp(LocalDateTime.now())
                 .message(exception.getMessage())
                 .description(exception.getDescription())
                 .build();
-        return new ResponseEntity<>(messageResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(messageResponse, HttpStatus.BAD_REQUEST);
     }
 }

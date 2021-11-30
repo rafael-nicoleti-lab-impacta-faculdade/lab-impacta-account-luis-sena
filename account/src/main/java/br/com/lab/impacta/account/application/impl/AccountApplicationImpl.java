@@ -18,7 +18,7 @@ public class AccountApplicationImpl implements AccountApplication {
 
     @Override
     public AccountBalanceResponse balance(Long accountId) {
-        Account account = service.findAccount(accountId);
+        var account = service.findAccount(accountId);
         return AccountAdapter.toDtoBalance(account);
     }
 

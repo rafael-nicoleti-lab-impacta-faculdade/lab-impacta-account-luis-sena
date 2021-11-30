@@ -1,5 +1,6 @@
 package br.com.lab.impacta.account.service.impl;
 
+import br.com.lab.impacta.account.config.properties.AccountExceptionsProperties;
 import br.com.lab.impacta.account.handler.exception.AccountDontExistsException;
 import br.com.lab.impacta.account.handler.exception.AccountWithoutBalanaceException;
 import br.com.lab.impacta.account.model.Account;
@@ -16,34 +17,24 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository repository;
-
-    @Value("${lab.account.exceptions.account-dont-exists-message}")
-    private String messageExceptionAccountDontExists;
-
-    @Value("${lab.account.exceptions.account-dont-exists-description}")
-    private String messageExceptionAccountDontExistsDescription;
-
-    @Value("${lab.account.exceptions.account-without-balance-message}")
-    private String messageExceptionAccountWithoutBalance;
-
-    @Value("${lab.account.exceptions.account-without-balance-message}")
-    private String messageExceptionAccountWithoutBalanceDescription;
+    private final AccountExceptionsProperties messages;
 
     @Override
     public Account findAccount(Long accountId) {
         return repository.findById(accountId)
                 .orElseThrow(() ->
-                new AccountDontExistsException(messageExceptionAccountDontExists, messageExceptionAccountDontExistsDescription));
+                new AccountDontExistsException(messages.getAccountDontExistsMessage(),
+                        messages.getAccountDontExistsDescription()));
     }
 
     @Override
     public void debitAccount(Long accountId, Double valueOfDebit) {
-        Account account = this.findAccount(accountId);
-
-        boolean debited = account.debit(valueOfDebit);
+        var account = this.findAccount(accountId);
+        var debited = account.debit(valueOfDebit);
 
         if(!debited)
-            throw new AccountWithoutBalanaceException(messageExceptionAccountWithoutBalance, messageExceptionAccountWithoutBalanceDescription);
+            throw new AccountWithoutBalanaceException(messages.getAccountWithoutBalanceMessage(),
+                    messages.getAccountWithoutBalanceDescription());
 
         this.repository.save(account);
     }
